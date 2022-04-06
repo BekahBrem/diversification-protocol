@@ -109,5 +109,5 @@ class UserInput():
         app = wx.App()
         frame = MyFrame()
         app.MainLoop()
-        print("frame agents: ", frame.agents)
+        #print("frame agents: ", frame.agents)
         return(frame.agents, frame.colours, frame.weightsDict)
