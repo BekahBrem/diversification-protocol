@@ -1,7 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter import *
-from turtle import left
 from  main import Simulation
 from liveSimulation import userOutput
 from experiment import Experiment
@@ -49,31 +48,62 @@ class UserParameters():
             )
             buttonWeights.grid(row = 4, column = 2, sticky = W, pady = 2)
 
+            #Radio buttons for graph type
+            radioLabel = tk.Label(font= ("Helvetica", 14, "underline"), padx = 10, text="Graph type:")
+            radioLabel.grid(row = 5, column = 0, sticky = W, columnspan = 2, pady=15)
+            
+            self.sharedVar = StringVar()
+
+            connectedRadio = Radiobutton(text = "Completely Connected", variable = self.sharedVar, value="connected", command=self.updateRadioSelection)
+            connectedRadio.grid(padx = 25, row = 6, column = 0, sticky = "W")
+
+            cycleRadio = Radiobutton(text = "Cycle", variable = self.sharedVar, value="cycle", command=self.updateRadioSelection)
+            cycleRadio.grid(padx = 25, row = 6, column = 1, sticky = "W")
+
+            lineRadio = Radiobutton(text = "Line", variable = self.sharedVar, value="line", command=self.updateRadioSelection)
+            lineRadio.grid(padx = 25, row = 6, column = 2, sticky = "W")
+
+            #Simulation Type
+            simLabel = tk.Label(font= ("Helvetica", 14, "underline"), padx = 10, text="Run Simulation or Experiment:")
+            simLabel.grid(row = 7, column = 0, sticky = W, columnspan = 2, pady=15)
+
             #Create button for live simulation
             buttonSimulation = tk.Button(
-                text="Run Interactive Simulation",
+                text="Interactive Simulation",
                 command = self.on_press
             )
-            buttonSimulation.grid(padx = 25, row = 6, column = 0, sticky = "NEWS", pady = 25)
+            buttonSimulation.grid(padx = 25, row = 8, column = 0, sticky = "NEWS", pady = 10)
 
             #Create button for experiments
             buttonExperiment = tk.Button(
-                text="Run Experiments",
+                text="Experiment",
                 command = self.experiment
             )
-            buttonExperiment.grid(padx = 25, row = 6, column = 1, sticky = "NEWS", pady = 25)
+            buttonExperiment.grid(padx = 25, row = 8, column = 1, sticky = "NEWS", pady = 10)
 
             #Create information buttons
             buttonHelp = tk.Button(
                 text="Help",
                 command = self.simulationInfo
             )
-            buttonHelp.grid(padx = 25, row = 6, column = 2, sticky = "NEWS", pady = 25)
+            buttonHelp.grid(padx = 25, row = 8, column = 2, sticky = "NEWS", pady = 10)
 
             #Shows the window
             self.window.mainloop()
 
-            
+        def updateRadioSelection(self):
+            self.selection = self.sharedVar.get()
+
+        def radioPopup(self):
+            popup = tk.Toplevel(self.window)
+            popup.wm_title("Select a graph type")
+
+            textExplanation = "Error: Please select a graph type to simulate with."
+            label = tk.Label(popup, wraplength=400, text=textExplanation, justify="left")
+            label.grid(row=0, column=0, pady = 15, padx = 15)
+
+            close = ttk.Button(popup, text="Ok", command=popup.destroy)
+            close.grid(row=1, column=0, pady = 15, padx = 15)
 
         def getAgents(self):
             #Create label and userinput, then pack into frame
@@ -123,7 +153,7 @@ The first option is an interactive simulation. This will allow you to monitor th
 This option is better for smaller amounts of agents (the recommendation is to have less than 40) so that it is easier to monitor the changes.
             
 The second option is experimental. This will produce a graph of how many nodes have each colour versus time. 
-This option works best for larger amounts of agents (the recommendation is 20+)
+This option works best for larger amounts of agents (the recommendation is 200+)
 """
 
             label = tk.Label(popup, wraplength=500, text=textExplanation, justify="left")
@@ -134,28 +164,34 @@ This option works best for larger amounts of agents (the recommendation is 20+)
             
         #When we press on the Start Simulation button
         def on_press(self):
-            try:
-                #Keep these as ints
-                value_agents = int(self.numAgents.get())
-                value_colours = int(self.numColours.get())
-                self.agents = value_agents
-                self.colours = value_colours
+            if (len(self.sharedVar.get()) == 0):
+                self.radioPopup()
+            else:
+                    try:
+                        weightsList = self.weightsInput.get().split(",")
+                        if (len(weightsList) != int(self.numColours.get())):
+                            raise ValueError("Weights and colours don't match")
+                        #Keep these as ints
+                        value_agents = int(self.numAgents.get())
+                        value_colours = int(self.numColours.get())
+                        self.agents = value_agents
+                        self.colours = value_colours
 
-                #Weight input isn't in the format we want, so convert it
-                self.weights = self.weightsInput.get()
-                self.convertWeightsToDictionary(self.weights)
+                        #Weight input isn't in the format we want, so convert it
+                        self.weights = self.weightsInput.get()
+                        self.convertWeightsToDictionary(self.weights)
 
-                #Make sure we have values for all
-                if not value_agents or not value_colours or not self.weights:
-                    print("Tip: you're missing a field")
-                else:
-                    #self.window.destroy()
-                    #Call the simulation class
-                    self.output = (self.agents, self.colours, self.weightsDict)
-                    #self.sim = Simulation(self.output)
-                    self.sim = userOutput(self.window, self.agents, self.colours, self.weightsDict)
-            except:
-                self.warningPopup()
+                        #Make sure we have values for all
+                        if not value_agents or not value_colours or not self.weights:
+                            print("Tip: you're missing a field")
+                        else:
+                            #self.window.destroy()
+                            #Call the simulation class
+                            self.output = (self.agents, self.colours, self.weightsDict)
+                            #self.sim = Simulation(self.output)
+                            self.sim = userOutput(self.window, self.sharedVar.get(), self.agents, self.colours, self.weightsDict)
+                    except:
+                        self.warningPopup()
                 
         def warningPopup(self):
             popup = tk.Toplevel(self.window)
@@ -201,36 +237,37 @@ This option works best for larger amounts of agents (the recommendation is 20+)
         def runExperiment(self):
             #self.window.destroy()
             #Call the simulation class
-            self.experiment = Experiment(self.window, self.agents, self.colours, self.weightsDict)
+            self.experiment = Experiment(self.window, self.sharedVar.get(), self.agents, self.colours, self.weightsDict)
 
         def experiment(self):
-            try:
-                #Keep these as ints
-                self.agents = int(self.numAgents.get())
-                self.colours = int(self.numColours.get())
-                #Weight input isn't in the format we want, so convert it
-                self.weights = self.weightsInput.get()
-                self.convertWeightsToDictionary(self.weights)
-                
-                #If numbers to big, give warning
-                totalWeight = self.getTotalWeight(self.weightsDict)
-                total =  totalWeight * totalWeight * self.agents * math.log(self.agents, 10)
-                if total > 20000:
-                    self.popup()
-                else:
-                    self.runExperiment()
-            except: 
-                self.warningPopup()
+            if (len(self.sharedVar.get()) == 0):
+                self.radioPopup()
+            else:
+                try:
+                    #Keep these as ints
+                    self.agents = int(self.numAgents.get())
+                    self.colours = int(self.numColours.get())
+                    #Weight input isn't in the format we want, so convert it
+                    self.weights = self.weightsInput.get()
+                    self.convertWeightsToDictionary(self.weights)
+                    
+                    #If numbers to big, give warning
+                    totalWeight = self.getTotalWeight(self.weightsDict)
+                    total =  totalWeight * totalWeight * self.agents * math.log(self.agents, 10)
+                    if total > 20000:
+                        self.popup()
+                    else:
+                        self.runExperiment()
+                except: 
+                    self.warningPopup()
 
         def convertWeightsToDictionary(self, weightsString):
-            #The expected input of our weights is a string such as: '3,4,5' so we need to separate this for our Colours
             weightsList = weightsString.split(",")
             if len(weightsList) != self.colours:
                 print("Make sure you have the same number of weights as the number of colours.")
-            else:
-                for colour in range(self.colours):
-                    self.weightsDict[colour] = int(weightsList[colour])
-            print(self.weightsDict)
+            #The expected input of our weights is a string such as: '3,4,5' so we need to separate this for our Colours
+            for colour in range(self.colours):
+                self.weightsDict[colour] = int(weightsList[colour])
 
         def infoButtons(self):
             #Create button for experiments

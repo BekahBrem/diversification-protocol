@@ -9,7 +9,7 @@ class Graph():
 
     graph = []
 
-    def __init__(self, agents, numColours, createDrawing):
+    def __init__(self, graphType, agents, numColours, createDrawing):
         #Create empty graph
         self.seed=32
         self.graph = nx.Graph()
@@ -23,8 +23,13 @@ class Graph():
         for thisId in self.graph.nodes:
             ids.append(thisId)
 
-        #edges = combinations(ids, 2)
-        edges = self.createCycle(ids)
+        edges = []
+        if (graphType == "connected"):
+            edges = self.createConnected(ids)
+        elif (graphType == "cycle"):
+            edges = self.createCycle(ids)
+        else:
+            edges = self.createLine(ids)
 
         self.graph.add_edges_from(edges)
 
@@ -37,6 +42,13 @@ class Graph():
     def createConnected(self, ids):
         edges = []
         edges = combinations(ids, 2)
+        return edges
+
+    def createLine(self, ids):
+        edges = []
+        for nodeId in ids:
+            if (nodeId+1 in ids):
+                edges.append((nodeId, nodeId+1))
         return edges
 
     def createCycle(self, ids):
@@ -108,7 +120,7 @@ class Graph():
         for thisId in self.graph.nodes:
             ids.append(thisId)
 
-        edges = self.createCycle(ids)
+        edges = self.createConnected(ids)
         #edges = combinations(ids, 2)
         self.graph.add_edges_from(edges)
 

@@ -67,9 +67,9 @@ class userOutput():
             tree.insert("", "end", values=(colour, self.calculateColourRepresentation(colour), self.getGoalWeight(colour)))
 
     #Called when object of this class is initialised
-    def __init__(self, parent, agents, colours, weightsDict):
+    def __init__(self, parent, graphType, agents, colours, weightsDict):
         #Call the simulation
-        self.simulation = Simulation(agents, colours, weightsDict, True)
+        self.simulation = Simulation(graphType, agents, colours, weightsDict, True)
         self.numOfAgents = agents
         self.numOfColours = colours
         self.weights = weightsDict
@@ -115,8 +115,6 @@ class userOutput():
             )
         fiftySteps.grid(row = 4, column = 3, sticky = 'nesw', pady = 2)
 
-        #Shows the window util it's manually closed
-        self.simOutput.mainloop()
 
 
 

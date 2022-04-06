@@ -77,13 +77,19 @@ class Experiment():
     def doSteps(self, expectedSteps):
         for step in range(0, (math.floor((expectedSteps))+500), 25):
             self.simulation.performSteps(10)
+            correct = 0
             for colour in range(self.numOfColours):
                 count = self.calculateColourRepresentation(colour)
                 if(step == 0):
                     self.y_values[colour] = [count]
                 else:
                     self.y_values[colour].append(count)
+                if (step >= math.floor((expectedSteps))):
+                    if (self.calculateExpectedNodes(colour) == count):
+                        correct += 1
             self.x_values.append(step)
+            if (correct == self.numOfColours): 
+                break
 
 
     def calculateAccuracy(self, experimentsList):
@@ -151,7 +157,7 @@ class Experiment():
         self.y_values = {}
 
         #For each experiment
-        self.simulation = Simulation(self.numOfAgents, self.numOfColours, self.weights, False)
+        self.simulation = Simulation(self.graphType, self.numOfAgents, self.numOfColours, self.weights, False)
         #Do the required number of steps
         self.doSteps(expectedSteps)
         colourResults = {}
@@ -169,11 +175,12 @@ class Experiment():
         self.createGraphNodesOverTime()
 
 
-    def __init__(self, parent, agents, colours, weightsDict):
+    def __init__(self, parent, graphType, agents, colours, weightsDict):
         #Call the simulation
         self.numOfAgents = agents
         self.numOfColours = colours
         self.weights = weightsDict
+        self.graphType = graphType
 
         #Initially we are on step 0
         self.stepNum = 0

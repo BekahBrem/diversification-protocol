@@ -8,7 +8,7 @@ import random
 
 class Simulation:
     #First thing that happens when we start the simulation
-    def __init__(self, agents, colours, weightsDict, createDrawing):
+    def __init__(self, graphType, agents, colours, weightsDict, createDrawing):
         """Get the user input to run our simulation with"""
         self.createDrawing = createDrawing
         #self.user_input_obj = UserParameters() #UserInput()
@@ -27,7 +27,7 @@ class Simulation:
             self.totalWeights += weight
 
         self.agents = self.createAgentsTest()
-        self.network = Graph(self.agents, self.numOfColours, createDrawing)
+        self.network = Graph(graphType, self.agents, self.numOfColours, createDrawing)
 
         #Assign edges and nodes to variables
         self.nodes = self.network.graph.nodes(data=True)
