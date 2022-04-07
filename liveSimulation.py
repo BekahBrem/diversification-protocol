@@ -1,6 +1,5 @@
 #Imports
 import networkx as nx
-from agent import Agent
 from graph import Graph
 import tkinter as tk
 from tkinter import ttk

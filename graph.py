@@ -14,6 +14,7 @@ class Graph():
         self.seed=32
         self.graph = nx.Graph()
         self.numColours = numColours
+        self.graphType = graphType
 
         #Add nodes (which are our agents)
         self.graph.add_nodes_from(agents)
@@ -120,8 +121,14 @@ class Graph():
         for thisId in self.graph.nodes:
             ids.append(thisId)
 
-        edges = self.createConnected(ids)
-        #edges = combinations(ids, 2)
+        edges = []
+        if (self.graphType == "connected"):
+            edges = self.createConnected(ids)
+        elif (self.graphType == "cycle"):
+            edges = self.createCycle(ids)
+        else:
+            edges = self.createLine(ids)
+
         self.graph.add_edges_from(edges)
 
         #Redraw the graph

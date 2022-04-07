@@ -1,8 +1,6 @@
 #All the imports from our other files
 import networkx as nx
-from agent import Agent
 from graph import Graph
-from  userInput import UserInput
 import time
 import random
 

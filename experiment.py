@@ -1,5 +1,4 @@
 import networkx as nx
-from agent import Agent
 from graph import Graph
 import tkinter as tk
 from tkinter import ttk
@@ -75,7 +74,7 @@ class Experiment():
         yscrollbar.configure(command=tree.yview)
 
     def doSteps(self, expectedSteps):
-        for step in range(0, (math.floor((expectedSteps))+500), 25):
+        for step in range(0, (math.floor((expectedSteps))*3), 25):
             self.simulation.performSteps(10)
             correct = 0
             for colour in range(self.numOfColours):
@@ -84,7 +83,7 @@ class Experiment():
                     self.y_values[colour] = [count]
                 else:
                     self.y_values[colour].append(count)
-                if (step >= math.floor((expectedSteps))):
+                if (step >= math.floor((expectedSteps))/2):
                     if (self.calculateExpectedNodes(colour) == count):
                         correct += 1
             self.x_values.append(step)
