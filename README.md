@@ -1,7 +1,4 @@
 # Final Year Project: diversification-protocol
-Name: Rebekah Bremner
-Student Number: 19015043
-Programme: BSc Computer Science
 
 This project is my final year project for my computer science BSc (Hons) at King's College London. 
 
